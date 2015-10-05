@@ -47,7 +47,7 @@ def IsUserSudoerInLines(user, sudoer_lines):
   def IsUserSudoerEntry(line):
     return re.match(r'^%s\s+' % user, line)
 
-  return filter(IsUserSudoerEntry, sudoer_lines)
+  return list(filter(IsUserSudoerEntry, sudoer_lines))
 
 
 class Accounts(object):
@@ -57,9 +57,9 @@ class Accounts(object):
   # filename character set.  The hyphen should not be the first char
   # of a portable user name.
   VALID_USERNAME_CHARS = set(
-      map(chr, range(ord('A'), ord('Z') + 1)) +
-      map(chr, range(ord('a'), ord('z') + 1)) +
-      map(chr, range(ord('0'), ord('9') + 1)) +
+      list(map(chr, list(range(ord('A'), ord('Z') + 1)))) +
+      list(map(chr, list(range(ord('a'), ord('z') + 1)))) +
+      list(map(chr, list(range(ord('0'), ord('9') + 1)))) +
       ['_', '-', '.'])
 
   def __init__(self, grp_module=grp, os_module=os,
@@ -113,7 +113,7 @@ class Accounts(object):
     def InvalidCharacterFilter(c):
       return c not in Accounts.VALID_USERNAME_CHARS
 
-    if filter(InvalidCharacterFilter, username):
+    if list(filter(InvalidCharacterFilter, username)):
       # There's an invalid character in it.
       return False
 
@@ -132,7 +132,7 @@ class Accounts(object):
       except KeyError:
         return False
 
-    return filter(GroupExists, groups_list)
+    return list(filter(GroupExists, groups_list))
 
   def GetUserInfo(self, user):
     """Return a tuple of the user's (home_dir, pid, gid)."""
@@ -227,13 +227,13 @@ class Accounts(object):
               'Did not grant admin access to %s. Sudoers was invalid.', user)
           return
 
-        self.os.chmod('/etc/sudoers', 0640)
+        self.os.chmod('/etc/sudoers', 0o640)
         with self.system.OpenFile('/etc/sudoers', 'w') as sudoer_f:
           sudoer_f.writelines(sudoer_lines)
           # Make sure we're still 0640.
-          self.os.fchmod(sudoer_f.fileno(), stat.S_IWUSR | 0640)
+          self.os.fchmod(sudoer_f.fileno(), stat.S_IWUSR | 0o640)
           try:
-            self.os.fchmod(sudoer_f.fileno(), 0440)
+            self.os.fchmod(sudoer_f.fileno(), 0o440)
           except (IOError, OSError) as e:
             logging.warning('Could not restore perms to /etc/sudoers: %s', e)
       finally:
@@ -260,7 +260,7 @@ class Accounts(object):
       if not self.EnsureHomeDir(home_dir, uid, gid):
         return False
 
-      if not self.EnsureDir(ssh_dir, uid, gid, 0700):
+      if not self.EnsureDir(ssh_dir, uid, gid, 0o700):
         return False
 
     # Not all sshd's support mulitple authorized_keys files.  We have to
@@ -322,7 +322,7 @@ class Accounts(object):
       return True
 
     # Use root as owner when creating ancestor directories.
-    if not self.EnsureDir(home_dir, 0, 0, 0755):
+    if not self.EnsureDir(home_dir, 0, 0, 0o755):
       return False
 
     self.os.chown(home_dir, uid, gid)
@@ -351,7 +351,7 @@ class Accounts(object):
 
     parent_dir = self.os.path.dirname(dir_path)
     if not parent_dir == dir_path:
-      if not self.EnsureDir(parent_dir, uid, gid, 0755):
+      if not self.EnsureDir(parent_dir, uid, gid, 0o755):
         return False
 
     try:
@@ -424,7 +424,7 @@ class Accounts(object):
         pass
 
     # Make sure the authorized_keys_file has the right perms (u+rw).
-    self.os.chmod(authorized_keys_file, 0600)
+    self.os.chmod(authorized_keys_file, 0o600)
     self.os.chown(authorized_keys_file, uid, gid)
 
     # Set SELinux context, if applicable to this system

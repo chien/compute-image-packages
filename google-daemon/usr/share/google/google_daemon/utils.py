@@ -115,7 +115,7 @@ class System(object):
           args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       (stdout, stderr) = p.communicate()
       return (p.returncode, stdout, stderr)
-    except OSError, e:
+    except OSError as e:
       raise RunCommandException('Could not run %s due to %s' % (args, e))
 
   def RunCommandFailed(self, result, *msg_args):

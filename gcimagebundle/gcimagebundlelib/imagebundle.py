@@ -112,7 +112,7 @@ def GetLogLevel(options):
   }
   if options.log_level in level:
     return level[options.log_level]
-  print 'Invalid logging level. defaulting to INFO.'
+  print('Invalid logging level. defaulting to INFO.')
   return logging.INFO
 
 
@@ -129,7 +129,7 @@ def SetupLogging(options, log_dir='/tmp'):
     logfile = options.log_file
   else:
     logfile = tempfile.mktemp(dir=log_dir, prefix='bundle_log_')
-  print 'Starting logging in %s' % logfile
+  print('Starting logging in %s' % logfile)
   logging.basicConfig(filename=logfile,
                       level=GetLogLevel(options),
                       format='%(asctime)s %(levelname)s:%(name)s:%(message)s')
@@ -142,7 +142,7 @@ def SetupLogging(options, log_dir='/tmp'):
 
 def PrintVersionInfo():
   #TODO: Should read from the VERSION file instead.
-  print 'version 1.2.10'
+  print('version 1.2.10')
 
 
 def GetTargetFilesystem(options, guest_platform):

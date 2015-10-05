@@ -26,7 +26,7 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from gcimagebundlelib import manifest
 from gcimagebundlelib.os_platform import Platform
@@ -70,7 +70,7 @@ class MockHttp(utils.Http):
       url = url.replace(utils.METADATA_V1_URL_PREFIX, '')
       if url == 'instance/?recursive=true':
         return self._instance_response
-    raise urllib2.HTTPError
+    raise urllib.error.HTTPError
 
 class StatvfsResult:
   """ A struct for partial os.statvfs result, used to mock the result. """
@@ -99,7 +99,7 @@ class ImageBundleTest(unittest.TestCase):
       shutil.rmtree(self.tmp_path)
     os.makedirs(self.tmp_path)
     with open(self.tmp_path + '/test1', 'w') as fd:
-      print >> fd, 'some text'
+      print('some text', file=fd)
     shutil.copyfile(self.tmp_path + '/test1', self.tmp_path + '/test2')
     os.makedirs(self.tmp_path + '/dir1')
     os.makedirs(self.tmp_path + '/dir1/dir11')

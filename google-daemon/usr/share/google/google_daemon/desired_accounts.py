@@ -19,7 +19,7 @@ import datetime
 import json
 import logging
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 METADATA_V1_URL_PREFIX = 'http://169.254.169.254/computeMetadata/v1/'
@@ -138,7 +138,7 @@ class DesiredAccounts(object):
     wait_for_change_query = WAIT_FOR_CHANGE % (etag, timeout_secs)
     request_url = url % wait_for_change_query
     logging.debug('Getting url: %s', request_url)
-    request = urllib2.Request(request_url)
+    request = urllib.request.Request(request_url)
     request.add_header('Metadata-Flavor', 'Google')
     return self.urllib2.urlopen(request, timeout=timeout_secs*1.1)
 
@@ -163,12 +163,12 @@ class DesiredAccounts(object):
       response = self._MakeHangingGetRequest(
           attribute_url, etag=etag, timeout_secs=timeout_secs)
       response_info = response.info()
-      if response_info and response_info.has_key('etag'):
+      if response_info and 'etag' in response_info:
         etag = response_info.getheader('etag')
       attribute_value = response.read()
       logging.debug('response: %s', attribute_value)
       return (attribute_value, etag)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
       if e.code == 404:
         # The attribute doesn't exist. Return None.
         # No need to log a warning.

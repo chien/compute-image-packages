@@ -119,7 +119,7 @@ class AccountsManager(object):
     extra_usernames = set(sshable_usernames) - set(desired_accounts.keys())
 
     if desired_accounts:
-      for username, ssh_keys in desired_accounts.iteritems():
+      for username, ssh_keys in desired_accounts.items():
         if not username:
           continue
 

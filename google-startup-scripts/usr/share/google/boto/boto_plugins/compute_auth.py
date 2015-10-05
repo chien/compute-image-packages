@@ -15,7 +15,7 @@
 """Authentication module for using Google Compute service accounts."""
 
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from boto.auth_handler import AuthHandler
 from boto.auth_handler import NotReadyToAuthenticate
@@ -57,11 +57,11 @@ class ComputeAuth(AuthHandler):
 
   def __GetJSONMetadataValue(self, url):
     try:
-      request = urllib2.Request(url)
+      request = urllib.request.Request(url)
       request.add_unredirected_header('Metadata-Flavor', 'Google')
-      data = urllib2.urlopen(request).read()
+      data = urllib.request.urlopen(request).read()
       return json.loads(data)
-    except (urllib2.URLError, urllib2.HTTPError, IOError):
+    except (urllib.error.URLError, urllib.error.HTTPError, IOError):
       return None
 
   def __GetGSScopes(self):

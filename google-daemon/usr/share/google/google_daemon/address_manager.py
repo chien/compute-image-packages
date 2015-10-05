@@ -33,7 +33,7 @@ import os
 import re
 import socket
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 PUBLIC_ENDPOINT_URL_PREFIX = (
 'http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/forwarded-ips/?recursive=true&alt=text&wait_for_change=true&timeout_sec=60&last_etag=')
@@ -91,13 +91,13 @@ class AddressManager(object):
       # If the connection gets abandoned, ensure we don't hang more than
       # 70 seconds.
       url = PUBLIC_ENDPOINT_URL_PREFIX + self.last_etag
-      request = urllib2.Request(url)
+      request = urllib.request.Request(url)
       request.add_unredirected_header('Metadata-Flavor', 'Google')
       u = self.urllib2.urlopen(request, timeout=70)
       addrs_data = u.read()
       headers = u.info().dict
       self.last_etag = headers.get('etag', self.default_last_etag)
-    except urllib2.HTTPError as h:
+    except urllib.error.HTTPError as h:
       self.ResetEtag()
       # 404 is treated like an empty list, for backward compatibility.
       if h.code == 404:

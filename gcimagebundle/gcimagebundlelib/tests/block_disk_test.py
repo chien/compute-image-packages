@@ -27,7 +27,7 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from gcimagebundlelib import block_disk
 from gcimagebundlelib import exclude_spec
@@ -281,7 +281,7 @@ class FsRawDiskTest(image_bundle_test_base.ImageBundleTest):
     class MockHttp(utils.Http):
       def Get(self, request, timeout=None):
         # if gcimagebundle is not run on GCE the metadata server will be unreachable
-        raise urllib2.URLError("urlopen error timed out")
+        raise urllib.error.URLError("urlopen error timed out")
 
     self._http = MockHttp()
     self._manifest._http = self._http
@@ -481,7 +481,7 @@ class RootFsRawTest(image_bundle_test_base.ImageBundleTest):
     try:
       self._bundle.Verify()
     except block_disk.InvalidRawDiskError as e:
-      print str(e)
+      print(str(e))
       return
     self.fail()
 
@@ -496,7 +496,7 @@ class RootFsRawTest(image_bundle_test_base.ImageBundleTest):
     try:
       self._bundle.Verify()
     except block_disk.InvalidRawDiskError as e:
-      print str(e)
+      print(str(e))
       return
     self.fail()
 

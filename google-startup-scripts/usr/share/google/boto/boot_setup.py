@@ -23,11 +23,11 @@ to that and then persists it into /etc/boto.cfg.  This is done so that
 the system boto.cfg can be removed prior to image packaging.
 """
 
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import os
 import sys
 import textwrap
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 NUMERIC_PROJECT_ID_URL=('http://169.254.169.254/'
                         'computeMetadata/v1/project/numeric-project-id')
@@ -39,10 +39,10 @@ AUTH_PLUGIN_DIR='/usr/share/google/boto/boto_plugins'
 def GetNumericProjectId():
   """Get the numeric project ID for this VM."""
   try:
-    request = urllib2.Request(NUMERIC_PROJECT_ID_URL)
+    request = urllib.request.Request(NUMERIC_PROJECT_ID_URL)
     request.add_unredirected_header('Metadata-Flavor', 'Google')
-    return urllib2.urlopen(request).read()
-  except (urllib2.URLError, urllib2.HTTPError, IOError), e:
+    return urllib.request.urlopen(request).read()
+  except (urllib.error.URLError, urllib.error.HTTPError, IOError) as e:
     return None
 
 

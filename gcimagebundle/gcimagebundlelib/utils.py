@@ -19,7 +19,7 @@ import logging
 import os
 import subprocess
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 METADATA_URL_PREFIX = 'http://169.254.169.254/computeMetadata/'
 METADATA_V1_URL_PREFIX = METADATA_URL_PREFIX + 'v1/'
@@ -402,7 +402,7 @@ def TarAndGzipFile(src_paths, dest):
 
 class Http(object):
   def Get(self, request, timeout=None):
-    return urllib2.urlopen(request, timeout=timeout).read()
+    return urllib.request.urlopen(request, timeout=timeout).read()
 
   def GetMetadata(self, url_path, recursive=False, timeout=None):
     """Retrieves instance metadata.
@@ -423,7 +423,7 @@ class Http(object):
     if recursive:
       suffix = '?recursive=true'
     url = '{0}{1}{2}'.format(METADATA_V1_URL_PREFIX, url_path, suffix)
-    request = urllib2.Request(url)
+    request = urllib.request.Request(url)
     request.add_unredirected_header('Metadata-Flavor', 'Google')
     return self.Get(request, timeout=timeout)
 
@@ -447,9 +447,9 @@ def IsRunningOnGCE():
   try:
     Http().GetMetadata('instance/id', timeout=1)
     return True
-  except urllib2.HTTPError as e:
+  except urllib.error.HTTPError as e:
     logging.warning('HTTP error: %s (http status code=%s)' % (e.reason, e.code))
-  except urllib2.URLError as e:
+  except urllib.error.URLError as e:
     logging.warning('Cannot reach metadata server: %s' % e.reason)
 
   return False

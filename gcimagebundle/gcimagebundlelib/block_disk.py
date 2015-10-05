@@ -299,7 +299,7 @@ class FsRawDisk(fs_copy.FsCopy):
       return 'UUID=%s / %s\n' % (uuid, g.group(1))
 
     logging.debug('Original /etc/fstab contents:\n%s', lines)
-    updated_lines = map(UpdateUUID, lines)
+    updated_lines = list(map(UpdateUUID, lines))
     if lines == updated_lines:
       logging.debug('No changes required to /etc/fstab')
       return
@@ -349,7 +349,7 @@ class RootFsRaw(FsRawDisk):
     # can result in significant overestimation of disk
     # space needed if the user has large disk space used in /tmp, for example.
     root_fs = self._statvfs(self._srcs[0][0])
-    disk_space_needed = long(1.4 * root_fs.f_bsize * (root_fs.f_blocks -
+    disk_space_needed = int(1.4 * root_fs.f_bsize * (root_fs.f_blocks -
         root_fs.f_bfree))
     logging.info(("Root disk on %s: f_bsize=%d f_blocks=%d f_bfree=%d. "
                   "Estimated space needed is %d (may be overestimated)."), 
